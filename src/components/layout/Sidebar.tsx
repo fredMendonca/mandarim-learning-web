@@ -14,27 +14,47 @@ import {
   Bookmark,
   X,
 } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 interface SidebarProps {
   open: boolean
   onClose: () => void
 }
 
-const nav = [
+interface NavItem {
+  to: string
+  label: string
+  icon: typeof LayoutDashboard
+  end?: boolean
+  adminOnly?: boolean
+  alunoOnly?: boolean
+}
+
+const navItems: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/usuarios', label: 'Usuários', icon: Users },
-  { to: '/conteudos', label: 'Conteúdos', icon: BookOpen },
-  { to: '/exercicios', label: 'Exercícios', icon: Dumbbell },
+  // Admin only
+  { to: '/usuarios', label: 'Usuários', icon: Users, adminOnly: true },
+  { to: '/conteudos', label: 'Conteúdos', icon: BookOpen, adminOnly: true },
+  { to: '/exercicios', label: 'Exercícios', icon: Dumbbell, adminOnly: true },
+  { to: '/ia', label: 'Conteúdos IA', icon: Sparkles, adminOnly: true },
+  { to: '/temas', label: 'Temas', icon: Bookmark, adminOnly: true },
+  { to: '/tags', label: 'Tags', icon: Tags, adminOnly: true },
+  // Both (aluno + admin)
   { to: '/quiz', label: 'Quiz', icon: Brain },
   { to: '/revisoes', label: 'Revisões', icon: RefreshCcw },
   { to: '/recomendacoes', label: 'Recomendações', icon: Lightbulb },
-  { to: '/ia', label: 'Conteúdos IA', icon: Sparkles },
   { to: '/estatisticas', label: 'Estatísticas', icon: BarChart3 },
-  { to: '/temas', label: 'Temas', icon: Bookmark },
-  { to: '/tags', label: 'Tags', icon: Tags },
 ]
 
 export function Sidebar({ open, onClose }: SidebarProps) {
+  const { isAdmin, isAluno } = useAuth()
+
+  const filteredNav = navItems.filter((item) => {
+    if (item.adminOnly && !isAdmin) return false
+    if (item.alunoOnly && !isAluno) return false
+    return true
+  })
+
   return (
     <>
       {/* Mobile overlay */}
@@ -75,7 +95,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-4 px-3" aria-label="Navegação principal">
           <ul className="space-y-0.5">
-            {nav.map(({ to, label, icon: Icon, end }) => (
+            {filteredNav.map(({ to, label, icon: Icon, end }) => (
               <li key={to}>
                 <NavLink
                   to={to}

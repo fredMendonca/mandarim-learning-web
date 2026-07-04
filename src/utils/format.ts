@@ -21,7 +21,7 @@ export function formatDateTime(dateString: string | undefined | null): string {
 
 export function formatPercent(value: number | undefined | null): string {
   if (value == null) return '—'
-  return `${(value * 100).toFixed(1)}%`
+  return `${value.toFixed(1)}%`
 }
 
 export function formatPercentDirect(value: number | undefined | null): string {

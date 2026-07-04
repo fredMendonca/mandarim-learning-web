@@ -8,9 +8,15 @@ const api = axios.create({
   },
 })
 
-// Request interceptor
+// Request interceptor — adds auth token
 api.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    const token = localStorage.getItem('mandarim_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
   (error) => Promise.reject(error),
 )
 
@@ -29,6 +35,16 @@ api.interceptors.response.use(
 
     if (!error.response) {
       message = 'Não foi possível conectar à API. Verifique se o servidor está rodando.'
+    } else if (status === 401) {
+      message = serverMessage || 'Sessão expirada. Faça login novamente.'
+      // Remove token e redireciona para login
+      localStorage.removeItem('mandarim_token')
+      localStorage.removeItem('mandarim_user')
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
+    } else if (status === 403) {
+      message = serverMessage || 'Acesso negado. Você não tem permissão para esta ação.'
     } else if (status === 400) {
       message = serverMessage || 'Dados inválidos. Verifique os campos e tente novamente.'
     } else if (status === 404) {
@@ -38,7 +54,6 @@ api.interceptors.response.use(
     } else if (status === 422) {
       message = serverMessage || 'Erro de validação nos dados enviados.'
     } else if (status >= 500) {
-      // Loga o corpo completo para diagnóstico
       console.error('[API] Erro 500 — corpo da resposta:', error.response?.data)
       message = serverMessage || 'Erro interno no servidor. Tente novamente mais tarde.'
     } else if (serverMessage) {

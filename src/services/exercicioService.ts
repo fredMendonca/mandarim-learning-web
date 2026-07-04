@@ -1,11 +1,17 @@
 import api from '@/lib/axios'
-import type { Exercicio, ExercicioForm, TipoExercicio } from '@/types'
+import type { Exercicio, ExercicioForm, TipoExercicio, PageResponse } from '@/types'
 
 const BASE = '/exercicios'
 
 export const exercicioService = {
   listar: () =>
-    api.get<Exercicio[]>(BASE).then((r) => r.data),
+    api.get<Exercicio[]>(`${BASE}/todos`).then((r) => r.data),
+
+  listarPaginado: (page = 0, size = 20, tipo?: string) => {
+    const params: Record<string, string | number> = { page, size }
+    if (tipo) params.tipo = tipo
+    return api.get<PageResponse<Exercicio>>(BASE, { params }).then((r) => r.data)
+  },
 
   buscarPorId: (id: string) =>
     api.get<Exercicio>(`${BASE}/${id}`).then((r) => r.data),

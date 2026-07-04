@@ -15,7 +15,7 @@ import type { Conteudo, TipoConteudo, PageResponse } from '@/types'
 import { formatTipoConteudo, dificuldadeLabel } from '@/utils/format'
 import { ConteudoModal } from './ConteudoModal'
 
-const PAGE_SIZE = 30
+const PAGE_SIZE = 20
 
 const tipoOptions = [
   { value: '', label: 'Todos os tipos' },
