@@ -305,9 +305,11 @@ export interface IndicadoresRevisaoResponse {
   tempoMedioResposta: number
   conteudosDominados: number
   conteudosEmAprendizado: number
-  evolucaoRetencao: EvolucaoDiaria[]
+  evolucaoDesempenho: { data: string; taxaAcerto: number; tempoMedio: number }[]
+  evolucaoRetencao: { data: string; retencao: number }[]
+  errosPorTema: { tema: string; quantidade: number }[]
   revisoesPorPrioridade: Record<string, number>
-  errosPorTema: Record<string, number>
+  probabilidadeEsquecimento: { conteudo: string; pinyin: string; probabilidade: number }[]
   acertosVsErros: { acertos: number; erros: number }
 }
 
